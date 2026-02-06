@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <!-- PWA Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Pres Hesaplayıcı">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#1a1a2e">
+    <meta name="background-color" content="#1a1a2e">
+    <meta name="description" content="Çift Eksantrik Pres Hesap Makinesi">
+    
+    <!-- Manifest -->
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiw4dpZnQgRWtzYW50cmlrIFByZXMgSGVzYXBsYXnEs2PEsSIsInNob3J0X25hbWUiOiJQcmVzIEhlc2FwbGF5xLHjMSIsInN0YXJ0X3VybCI6Ii4iLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsImJhY2tncm91bmRfY29sb3IiOiIjMWEyYTJlIiwidGhlbWVfY29sb3IiOiIjZmZhNTAwIn0=">
+    
+    <title>Çift Eksantrik Pres Hesaplayıcı</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .calculator-container {
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 24px;
+            padding: 30px 25px;
+            width: 100%;
+            max-width: 400px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .header-icon {
+            font-size: 2.5rem;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .header h1 {
+            color: #fff;
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+            letter-spacing: -0.5px;
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.85rem;
+            font-weight: 400;
+        }
+
+        .input-group {
+            margin-bottom: 8px;
+        }
+
+        .input-wrapper {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 16px 18px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .input-wrapper:focus-within {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 165, 0, 0.4);
+            transform: translateX(4px);
+            box-shadow: 0 0 0 3px rgba(255, 165, 0, 0.1);
+        }
+
+        .input-label {
+            display: block;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .input-field {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-size: 1.6rem;
+            font-weight: 600;
+            outline: none;
+            font-family: inherit;
+            padding: 0;
+        }
+
+        .input-field::placeholder {
+            color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Remove number input arrows */
+        .input-field::-webkit-outer-spin-button,
+        .input-field::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .input-field[type=number] {
+            -moz-appearance: textfield;
+        }
+
+        .result-section {
+            margin: 24px 0;
+        }
+
+        .result-box {
+            background: linear-gradient(135deg, #ffa500 0%, #ff8c00 100%);
+            border-radius: 20px;
+            padding: 28px 20px;
+            text-align: center;
+            box-shadow: 0 20px 40px -10px rgba(255, 165, 0, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .result-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+            transform: translateX(-100%);
+            transition: transform 0.6s;
+        }
+
+        .result-box.pulse::before {
+            transform: translateX(100%);
+        }
+
+        .result-label {
+            color: rgba(0, 0, 0, 0.5);
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 8px;
+        }
+
+        .result-value {
+            color: #000;
+            font-size: 3.2rem;
+            font-weight: 800;
+            line-height: 1;
+            letter-spacing: -1px;
+        }
+
+        .result-unit {
+            color: rgba(0, 0, 0, 0.5);
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-left: 4px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 16px 20px;
+            border: none;
+            border-radius: 14px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-family: inherit;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .btn:active {
+            transform: scale(0.96);
+        }
+
+        .btn-clear {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .btn-clear:hover, .btn-clear:active {
+            background: rgba(255, 255, 255, 0.18);
+        }
+
+        .btn-calculate {
+            background: #fff;
+            color: #000;
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-calculate:hover, .btn-calculate:active {
+            background: #f0f0f0;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 255, 255, 0.25);
+        }
+
+        .formula-info {
+            margin-top: 24px;
+            padding: 18px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 14px;
+            border-left: 4px solid #ffa500;
+        }
+
+        .formula-info h3 {
+            color: #ffa500;
+            font-size: 0.75rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .formula-info p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.85rem;
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+
+        .formula {
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+            color: #fff;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 10px;
+            font-size: 0.9rem;
+            letter-spacing: -0.3px;
+        }
+
+        .install-prompt {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(255, 165, 0, 0.95);
+            color: #000;
+            padding: 14px 24px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 1000;
+            cursor: pointer;
+        }
+
+        .install-prompt.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: linear-gradient(135deg, #0a0a14 0%, #0c1120 50%, #071028 100%);
+            }
+        }
+
+        /* Small screen adjustments */
+        @media (max-width: 380px) {
+            .calculator-container {
+                padding: 24px 20px;
+            }
+            .result-value {
+                font-size: 2.8rem;
+            }
+            .input-field {
+                font-size: 1.4rem;
+            }
+        }
+
+        /* Landscape mode */
+        @media (max-height: 600px) and (orientation: landscape) {
+            body {
+                padding: 10px;
+            }
+            .calculator-container {
+                max-width: 100%;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+            }
+            .header {
+                grid-column: 1 / -1;
+                margin-bottom: 10px;
+            }
+            .input-group {
+                margin-bottom: 0;
+            }
+            .result-section {
+                margin: 0;
+            }
+            .controls {
+                grid-column: 1 / -1;
+                margin-top: 10px;
+            }
+            .formula-info {
+                grid-column: 1 / -1;
+                margin-top: 10px;
+            }
+        }
+
+        /* Loading animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .calculator-container {
+            animation: fadeIn 0.6s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator-container">
+        <div class="header">
+            <span class="header-icon">⚙️</span>
+            <h1>Çift Eksantrik Pres</h1>
+            <p>Hesap Makinesi</p>
+        </div>
+
+        <div class="input-group">
+            <div class="input-wrapper">
+                <label class="input-label">Tam Çap (mm)</label>
+                <input type="number" class="input-field" id="tamCap" placeholder="0.00" step="0.01" value="4.20" inputmode="decimal">
+            </div>
+
+            <div class="input-wrapper">
+                <label class="input-label">Merkez Ölçüsü (mm)</label>
+                <input type="number" class="input-field" id="merkezOlcusu" placeholder="0.00" step="0.01" value="19" inputmode="decimal">
+            </div>
+        </div>
+
+        <div class="result-section">
+            <div class="result-box" id="resultBox">
+                <div class="result-label">Sonuç</div>
+                <div class="result-value">
+                    <span id="sonuc">16.90</span><span class="result-unit">mm</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-clear" onclick="clearInputs()" type="button">Temizle</button>
+            <button class="btn btn-calculate" onclick="calculate()" type="button">Hesapla</button>
+        </div>
+
+        <div class="formula-info">
+            <h3>📐 Formül</h3>
+            <p>Çift eksantrik preslerde net çalışma mesafesi:</p>
+            <div class="formula">
+                Sonuç = Merkez Ölçüsü − (Tam Çap ÷ 2)
+            </div>
+        </div>
+    </div>
+
+    <div class="install-prompt" id="installPrompt" onclick="installApp()">
+        📲 Ana Ekrana Ekle
+    </div>
+
+    <script>
+        // Register Service Worker for PWA
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('data:text/javascript;base64,' + btoa(`
+                self.addEventListener('install', e => e.waitUntil(self.skipWaiting()));
+                self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
+                self.addEventListener('fetch', e => e.respondWith(fetch(e.request).catch(() => new Response('Offline'))));
+            `)).catch(() => console.log('SW registration skipped'));
+        }
+
+        let deferredPrompt;
+
+        // Install prompt
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            setTimeout(() => {
+                document.getElementById('installPrompt').classList.add('show');
+            }, 2000);
+        });
+
+        function installApp() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then(() => {
+                    document.getElementById('installPrompt').classList.remove('show');
+                    deferredPrompt = null;
+                });
+            } else {
+                // iOS manual install instructions
+                alert('iPhone/iPad: Safari\'de paylaş butonuna basıp "Ana Ekrana Ekle" seçin');
+            }
+        }
+
+        // Auto-calculate on input
+        const tamCapInput = document.getElementById('tamCap');
+        const merkezInput = document.getElementById('merkezOlcusu');
+
+        tamCapInput.addEventListener('input', calculate);
+        merkezInput.addEventListener('input', calculate);
+
+        // Handle Enter key
+        tamCapInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') merkezInput.focus();
+        });
+        merkezInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') calculate();
+        });
+
+        function calculate() {
+            const tamCap = parseFloat(tamCapInput.value);
+            const merkezOlcusu = parseFloat(merkezInput.value);
+            
+            if (isNaN(tamCap) || isNaN(merkezOlcusu)) {
+                document.getElementById('sonuc').textContent = '---';
+                return;
+            }
+            
+            // Formula: Merkez Ölçüsü - (Tam Çap / 2)
+            const sonuc = merkezOlcusu - (tamCap / 2);
+            
+            const sonucElement = document.getElementById('sonuc');
+            sonucElement.textContent = sonuc.toFixed(2);
+            
+            // Animate result
+            const resultBox = document.getElementById('resultBox');
+            resultBox.classList.remove('pulse');
+            void resultBox.offsetWidth;
+            resultBox.classList.add('pulse');
+        }
+
+        function clearInputs() {
+            tamCapInput.value = '';
+            merkezInput.value = '';
+            document.getElementById('sonuc').textContent = '0.00';
+            tamCapInput.focus();
+        }
+
+        // Initialize
+        calculate();
+
+        // Hide install prompt if installed
+        if (window.matchMedia('(display-mode: standalone)').matches) {
+            document.getElementById('installPrompt').style.display = 'none';
+        }
+
+        // Prevent zoom on iOS
+        document.addEventListener('gesturestart', (e) => e.preventDefault());
+        document.addEventListener('dblclick', (e) => e.preventDefault());
+    </script>
+</body>
+</html>
